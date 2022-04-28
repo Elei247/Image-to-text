@@ -9,85 +9,121 @@ it opens the text file automatically once program is done running
 import cv2
 import pytesseract
 from pytesseract import Output
+# fitz, AKA pymupdf, converts PDFs to text (install pymupdf to use library)
+import fitz
 
+pytesseract.pytesseract.tesseract_cmd = 'C:\\Program Files\\Tesseract-OCR\\tesseract.exe'
 
-# reading image using opencv
-image_name = input('''
+# reading image using opencv or pymupdf
+image_name = str(input('''
 Enter the name of the image from which the text is to be extracted. 
 Don't forget to include the extension in the name of the image.  
 If the image is not in the same directory as the program, please include the path to the image.
+'''))
 
-''')
-image = cv2.imread(image_name)
+# If the document is an image, openCV will extract the text from the image, adding it to a new text file
+if (".jpg" in image_name) or (".png" in image_name):
+    image = cv2.imread(image_name)
 
-#converting image into gray scale image
-gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    #converting image into gray scale image
+    gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 
-# converting it to binary image by Thresholding
-# this step is require if you have colored image because if you skip this part
-# then tesseract won't able to detect text correctly and this will give incorrect result
-threshold_img = cv2.threshold(gray_image, 0, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)[1]
+    # converting it to binary image by Thresholding
+    # this step is require if you have colored image because if you skip this part
+    # then tesseract won't able to detect text correctly and this will give incorrect result
+    threshold_img = cv2.threshold(gray_image, 0, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)[1]
 
-# display image
-print('Displaying a black and white version of the image so the text is more easily visible...')
-cv2.imshow('threshold image', threshold_img)
+    # display image
+    print('Displaying a black and white version of the image so the text is more easily visible...')
+    cv2.imshow('threshold image', threshold_img)
 
-# Maintain output window for 5 seconds
-cv2.waitKey(5000)
+    # Maintain output window for 5 seconds
+    cv2.waitKey(5000)
 
-# Destroying present windows on screen
-cv2.destroyAllWindows()
+    # Destroying present windows on screen
+    cv2.destroyAllWindows()
 
-#configuring parameters for tesseract
+    #configuring parameters for tesseract
 
-custom_config = r'--oem 3 --psm 6'
+    custom_config = r'--oem 3 --psm 6'
 
-# now feeding image to tesseract
+    # now feeding image to tesseract
 
-details = pytesseract.image_to_data(threshold_img, output_type=Output.DICT, config=custom_config, lang='eng')
+    details = pytesseract.image_to_data(threshold_img, output_type=Output.DICT, config=custom_config, lang='eng')
 
-total_boxes = len(details['text'])
+    total_boxes = len(details['text'])
 
-for sequence_number in range(total_boxes):
+    for sequence_number in range(total_boxes):
 
-	if float(details['conf'][sequence_number]) >30:
-		(x, y, w, h) = (details['left'][sequence_number], details['top'][sequence_number], details['width'][sequence_number],  details['height'][sequence_number])
-		threshold_img = cv2.rectangle(threshold_img, (x, y), (x + w, y + h), (0, 255, 0), 2)
+        if float(details['conf'][sequence_number]) >30:
+            (x, y, w, h) = (details['left'][sequence_number], details['top'][sequence_number], details['width'][sequence_number],  details['height'][sequence_number])
+            threshold_img = cv2.rectangle(threshold_img, (x, y), (x + w, y + h), (0, 255, 0), 2)
 
-# display image
-print('highlighting detected texts in the image...')
-cv2.imshow('captured text', threshold_img)
+    # display image
+    print('highlighting detected texts in the image...')
+    cv2.imshow('captured text', threshold_img)
 
-# Maintain output window for 5 seconds
+    # Maintain output window for 5 seconds
 
-cv2.waitKey(5000)
+    cv2.waitKey(5000)
 
-# Destroying present windows on screen
+    # Destroying present windows on screen
 
-cv2.destroyAllWindows()
+    cv2.destroyAllWindows()
 
-parse_text = []
+    parse_text = []
 
-word_list = []
+    word_list = []
 
-last_word = ''
+    last_word = ''
 
-for word in details['text']:
+    for word in details['text']:
 
-    if word!='':
+        if word!='':
 
-        word_list.append(word)
+            word_list.append(word)
 
-        last_word = word
+            last_word = word
 
-    if (last_word!='' and word == '') or (word==details['text'][-1]):
+        if (last_word!='' and word == '') or (word==details['text'][-1]):
 
-        parse_text.append(word_list)
+            parse_text.append(word_list)
 
-        word_list = []
+            word_list = []
         
-import csv
+    import csv
 
-with open('result_text.txt',  'w', newline="") as file:
+    with open('result_text.txt',  'w', newline="") as file:
 
-    csv.writer(file, delimiter=" ").writerows(parse_text)
+        csv.writer(file, delimiter=" ").writerows(parse_text)
+
+    window = input("Your text extraction is complete. Do you want to display the text file as a window? Y/N ")
+    if (window.lower() == "y") or (window.lower() == "yes"):
+        import os
+        os.startfile("result_text.txt")
+    elif (window.lower() == "n") or (window.lower() == "no"):
+        print("Alright. The text document can be found in the same directory as the program.")
+    else:
+        print("Please type a valid response")
+
+# This opens the PDF document and extracts the text, adding it to a new text file
+elif (".pdf" in image_name):
+    with fitz.open(str(image_name)) as pdf:
+        with open('pdf-extract.txt',  'w') as pdf_extract:
+            text = ""
+            for page in pdf:
+                text += page.get_text()
+                text += "\n"
+        
+            pdf_extract.write(str(text))
+    window = input("Your text extraction is complete. Do you want to display the text file as a window? Y/N ")
+    if (window.lower() == "y") or (window.lower() == "yes"):
+        import os
+        os.startfile("pdf-extract.txt")
+    elif (window.lower() == "n") or (window.lower() == "no"):
+        print("Alright. The text document can be found in the same directory as the program.")
+    else:
+        print("Please type a valid response")
+
+else:
+    print("Type a valid file type: .pdf, .png, or .jpg!")
