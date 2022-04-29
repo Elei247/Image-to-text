@@ -125,4 +125,4 @@ elif (".pdf" in image_name):
     display_window()
 
 else:
-    print("Type a valid file type: .pdf, .png, or .jpg!")
+    print("Type a valid file type: .pdf, .png, .jpeg or .jpg!")
