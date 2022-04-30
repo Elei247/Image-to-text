@@ -31,7 +31,7 @@ def display_window():
         window_input = input("Your text extraction is complete. Do you want to display the text file as a window? Y/N ")
         if (window_input.lower() == "y") or (window_input.lower() == "yes"):
             # Uses open_file function
-            open_file("result_text.txt")
+            open_file("image-extract.txt")
         elif (window_input.lower() == "n") or (window_input.lower() == "no"):
             print("Alright. The text document can be found in the same directory as the program.")
         else:
@@ -118,11 +118,11 @@ if (".jpg" in image_name) or (".png" in image_name) or (".jpeg" in image_name):
         
     import csv
 
-    with open('image_extract.txt',  'w', newline="") as file:
+    with open('image-extract.txt',  'w', newline="") as file:
 
         csv.writer(file, delimiter=" ").writerows(parse_text)
 
-    display_window('image_extract.txt')
+    display_window()
 
 # This opens the PDF document and extracts the text, adding it to a new text file
 elif (".pdf" in image_name):
