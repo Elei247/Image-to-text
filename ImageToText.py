@@ -1,11 +1,16 @@
-# importing modules
+"""
+Libraries to install:
+OpenCV: pip/pip3 install opencv-python
+PyTesseract: pip/pip3 install pytesseract
+PyMuPDF: pip/pip3 install PyMuPDF
+"""
+
+# imports libraries and modules
 import cv2
 import pytesseract
 from pytesseract import Output
-
 import os, sys, subprocess
-
-# fitz, AKA pymupdf, converts PDFs to text (install pymupdf to use library)
+# fitz, AKA pymupdf, converts PDFs to text
 import fitz
 
 
