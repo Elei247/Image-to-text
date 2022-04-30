@@ -27,14 +27,24 @@ def open_file(filename):
 
 # Defines whether a window should be displayed or not, based on user input
 def display_window():
-    window_input = input("Your text extraction is complete. Do you want to display the text file as a window? Y/N ")
-    if (window_input.lower() == "y") or (window_input.lower() == "yes"):
-        # Uses open_file function
-        open_file("result_text.txt")
-    elif (window_input.lower() == "n") or (window_input.lower() == "no"):
-        print("Alright. The text document can be found in the same directory as the program.")
-    else:
-        print("Please type a valid response")
+    if (".jpg" in image_name) or (".png" in image_name) or (".jpeg" in image_name):
+        window_input = input("Your text extraction is complete. Do you want to display the text file as a window? Y/N ")
+        if (window_input.lower() == "y") or (window_input.lower() == "yes"):
+            # Uses open_file function
+            open_file("result_text.txt")
+        elif (window_input.lower() == "n") or (window_input.lower() == "no"):
+            print("Alright. The text document can be found in the same directory as the program.")
+        else:
+            print("Please type a valid response")
+    elif (".pdf" in image_name):
+        window_input = input("Your text extraction is complete. Do you want to display the text file as a window? Y/N ")
+        if (window_input.lower() == "y") or (window_input.lower() == "yes"):
+            # Uses open_file function
+            open_file("pdf-extract.txt")
+        elif (window_input.lower() == "n") or (window_input.lower() == "no"):
+            print("Alright. The text document can be found in the same directory as the program.")
+        else:
+            print("Please type a valid response")
 
 # If the document is an image, openCV will extract the text from the image, adding it to a new text file
 if (".jpg" in image_name) or (".png" in image_name) or (".jpeg" in image_name):
@@ -117,7 +127,7 @@ if (".jpg" in image_name) or (".png" in image_name) or (".jpeg" in image_name):
 # This opens the PDF document and extracts the text, adding it to a new text file
 elif (".pdf" in image_name):
     with fitz.open(str(image_name)) as pdf:
-        with open('result_text.txt',  'w') as pdf_extract:
+        with open('pdf-extract.txt',  'w') as pdf_extract:
             text = ""
             for page in pdf:
                 text += page.get_text()
