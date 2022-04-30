@@ -8,7 +8,6 @@ import os, sys, subprocess
 # fitz, AKA pymupdf, converts PDFs to text (install pymupdf to use library)
 import fitz
 
-pytesseract.pytesseract.tesseract_cmd = 'C:\\Program Files\\Tesseract-OCR\\tesseract.exe'
 
 # reading image using opencv or pymupdf
 image_name = str(input('''
